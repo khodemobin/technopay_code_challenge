@@ -79,4 +79,23 @@ class PayInvoiceFeatureTest extends TestCase
             ->assertStatus(500)
             ->assertJson(['message' => 'Invoice has expired.']);
     }
+
+    public function test_daily_limit_blocks_payment(): void
+    {
+        config(['wallet.daily_limit' => 300]);
+
+        $user = User::factory()
+            ->has(Wallet::factory(['balance' => 500]))
+            ->has(Invoice::factory(['amount' => 100, 'paid_at' => now()])->count(3))
+            ->create();
+
+        $invoice = Invoice::factory(['user_id' => $user->id, 'amount' => 50])->create();
+
+        $this->actingAs($user)
+            ->postJson(route('invoices.pay', $invoice))
+            ->assertStatus(500)
+            ->assertJson(['message' => 'Daily spending limit reached.']);
+
+        $this->assertNull($invoice->fresh()->paid_at);
+    }
 }

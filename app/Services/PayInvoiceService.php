@@ -12,6 +12,7 @@ class PayInvoiceService
     public function __construct(
         private InvoiceService $invoiceService,
         private WalletService $walletService,
+        private DailySpendingLimitService $limitService,
     ) {}
 
     public function handle(User $user, Invoice $invoice): void
@@ -21,10 +22,13 @@ class PayInvoiceService
         $this->invoiceService->ensureInvoiceIsValid($invoice);
         $this->walletService->ensureWalletIsUsable($user->wallet);
 
-        DB::transaction(function () use ($user, $invoice) {
-            $this->walletService->deductBalance($user->wallet, $invoice->amount);
-            $this->invoiceService->markAsPaid($invoice);
+        $this->limitService->checkAndApplyLimit($invoice->amount, function () use ($user, $invoice) {
+            DB::transaction(function () use ($user, $invoice) {
+                $this->walletService->deductBalance($user->wallet, $invoice->amount);
+                $this->invoiceService->markAsPaid($invoice);
+            });
         });
+
         //        } catch (PaymentException $e) {
         //
         //        }
