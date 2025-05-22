@@ -1,81 +1,64 @@
-## 🧠 TechnoPay Code Challenge
-### Overview
-At **TechnoPay**, we deKBsign systems that prioritize security, integrity, and scalability. In this challenge, you are tasked with implementing a secure wallet purchase process that ensures safe and consistent transactions.
-
-### 🎯 Objective
-Design and implement a wallet-based purchase system that ensures each transaction is explicitly confirmed before the wallet balance is deducted. The confirmation process should allow integrating two-step verification mechanisms, and the system must guarantee consistency, integrity, and safe execution even under concurrent requests.
-
-### 🧾 Scenario
-Users have wallet accounts with a balance they can use to make purchases. Your task is to build a system that supports:
-
-#### ✅ Functional Requirements
-The system should:
+## Wallet-Based Purchase System
 
 
-**1- Invoice payment support**
->The system should be able to handle paying an invoice. The purchase has already been created, and now the invoice needs to be paid. It also has an expiration time.
+This project focuses on implementing a wallet-based invoice payment system on Laravel Version 12 that guarantees strong consistency and concurrency safety. Features include two-step verification, user spending limits, transaction completion alerts, and real-time spending limit notifications.
 
-**2- User must not be blocked.**
+### Features
 
-**3- Wallet must be active.**
+- Enhanced security measures for paying invoices through user wallets.
+- Two-step verification (2SV) integrated before payment.
+- Prevent Unauthorized payments with global daily spending limit enforcement.
+- Checks on wallet balance and usability.
+- Precise timestamps for payments.
+- Alerts and notifications for users post payment regarding success or failure.
+- Refund logic and automatic adjustments for failed payments.
+- Secure management of concurrent transactions.
 
-**4- Ownership Enforcement**
->Invoice must belogns to this user.
+### Architecture
 
-**5- Two-step verification**
->Ensure that the purchase is confirmed before deducting the wallet balance to maintain integrity and prevent inconsistencies.
+- PayInvoiceService: Primary service that orchestrates the payment flow.
+- InvoiceService: Validating and managing invoice states.
+- WalletService: Validation of wallet balance and usability.
+- DailySpendingLimitService: Check and apply daily spending limit.
+- TwoStepVerificationService: Initiates and verifies 2SV.
+- NotificationService: Pays and alerts users regarding payment.
 
-**6- Insufficient Balance Handling**
->If the wallet balance is insufficient, return an appropriate error and do not process the transaction.
+### Design Patterns & Principles
 
-**7-  Daily Spending Limit**
->There is a global daily spending limit for all users combined. Prevent any invoice from being paid if the total value of already-paid invoices on the same day has reached this threshold.
+- Service Layer: Business logic is stored in different services which are managed separately from the controllers/models.
+- Dependency Injection: Tests and alterations are easily made as services and controllers can be altered through their constructors.
+- Single Responsibility Principle (SRP): Each service handles a single aspect of the payment process.
+- Transaction Management: Uses database transactions for atomic wallet deduction and invoice marking.
+- Exception Handling: Custom exceptions like PaymentException signal domain errors.
 
-**8-  Accurate Timestamps**
->The system should record the time when the invoice is paid.
 
-**9-  Notifications**
->Notify the user appropriately after a successful or failed transaction.
+### Installation & Setup
 
-**10-  Refund on Failure**
->If an error occurs during the payment process, ensure that the amount is refunded to the wallet.
+- Clone the repo
+- Run ```composer install```
+- Configure .env (DB connection, daily spending limit, etc.)
+- Run migrations: ```php artisan migrate```
+- Seed initial data: ```php artisan db:seed```
+- Serve with ```php artisan serve```
 
-**11- Mock External Services**
->If the system requires integration with external services, use mock services with fixed responses. No real integration is needed.
+### Running Tests
+Run all tests with:
 
-**12- Ensure the response provides all necessary details**
+```php artisan test```
 
-### ⚠️ Concurrency & Safety
-The entire implementation must be safe for concurrent access, preventing race conditions and guaranteeing data consistency.
 
-### 🧱 Architecture & Design Requirements
-Use **Laravel v11+**
+### API Endpoints
 
-No external packages
+- POST /api/invoice/{invoice}/pay
+```
+{
+    "code": "two-step-verification-code"
+}
+```
 
-Code must be clean, readable, and maintainable
+- POST /api/invoice/{invoice}/2sv/initiate
+- POST /api/invoice/{invoice}/2sv/verify
 
-Follow design patterns and `SOLID` principles
 
-Ensure the system is scalable and easy to extend
-
-Including a README file is required. The README should include the project structure and the design patterns used.
-
-### 🧪 Testing
-Provide **unit** and **feature** tests
-
-Include test cases for success, failure, and edge scenarios (e.g., simultaneous purchases)
-
-### Additional Points
-You get extra points if you Dockerize the project.
-
-### 🚚 Submission Guidelines
-Upload your code to a GitHub repository
-
-Share the link by replying to this email:
-📧 fouladgar.dev@gmail.com
-
-### 🤝 Final Notes
-If you have any questions, feel free to reach out. We're looking forward to seeing how you ensure safety, clarity, and scalability in your solution.
-
-Thank you for your time and interest in joining **TechnoPay**!
+Notifications are logged; replace with real email/SMS logic as needed.
+SQLite is supported, but ensure your DB supports transactions properly for concurrency safety.
