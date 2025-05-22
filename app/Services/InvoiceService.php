@@ -25,7 +25,7 @@ class InvoiceService
     public function ensureOwnership(Invoice $invoice, int $userId): void
     {
         if ($invoice->user_id !== $userId) {
-            throw new PaymentException('You do not own this invoice.');
+            abort(403, 'You do not have permission to pay this invoice.');
         }
     }
 

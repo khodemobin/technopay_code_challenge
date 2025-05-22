@@ -18,7 +18,7 @@ class PayInvoiceService
 
     public function handle(User $user, Invoice $invoice): void
     {
-        try {
+//        try {
             $this->invoiceService->ensureOwnership($invoice, $user->id);
             $this->invoiceService->ensureInvoiceIsValid($invoice);
             $this->walletService->ensureWalletIsUsable($user->wallet);
@@ -27,8 +27,8 @@ class PayInvoiceService
                 $this->walletService->deductBalance($user->wallet, $invoice->amount);
                 $this->invoiceService->markAsPaid($invoice);
             });
-        } catch (PaymentException $e) {
-            dd($e);
-        }
+//        } catch (PaymentException $e) {
+//
+//        }
     }
 }
