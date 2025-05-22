@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Exceptions\PaymentException;
-use App\Models\User;
 use App\Models\Wallet;
 
 class WalletService
@@ -13,8 +12,8 @@ class WalletService
      */
     public function ensureWalletIsUsable(Wallet $wallet): void
     {
-        if (!$wallet->is_active) {
-            throw new PaymentException("Wallet is not active.");
+        if (! $wallet->is_active) {
+            throw new PaymentException('Wallet is not active.');
         }
     }
 
@@ -24,7 +23,7 @@ class WalletService
     public function deductBalance(Wallet $wallet, float $amount): void
     {
         if ($wallet->balance < $amount) {
-            throw new PaymentException("Insufficient balance.");
+            throw new PaymentException('Insufficient balance.');
         }
 
         $wallet->decrement('balance', $amount);

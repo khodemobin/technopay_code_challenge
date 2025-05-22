@@ -12,7 +12,7 @@ class Invoice extends Model
     /** @use HasFactory<InvoiceFactory> */
     use HasFactory;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     protected function casts(): array
     {
@@ -27,15 +27,18 @@ class Invoice extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function isPaid(): bool {
-        return !is_null($this->paid_at);
+    public function isPaid(): bool
+    {
+        return ! is_null($this->paid_at);
     }
 
-    public function isExpired(): bool {
+    public function isExpired(): bool
+    {
         return now()->greaterThan($this->expires_at);
     }
 
-    public static function scopePaidToday($query) {
+    public static function scopePaidToday($query)
+    {
         return $query->whereDate('paid_at', now()->toDateString());
     }
 }
