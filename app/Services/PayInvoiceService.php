@@ -7,20 +7,28 @@ use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class PayInvoiceService
+readonly class PayInvoiceService
 {
     public function __construct(
-        private InvoiceService $invoiceService,
-        private WalletService $walletService,
-        private DailySpendingLimitService $limitService,
-    ) {}
-
-    public function handle(User $user, Invoice $invoice): void
+        private InvoiceService             $invoiceService,
+        private WalletService              $walletService,
+        private DailySpendingLimitService  $limitService,
+        private TwoStepVerificationService $twoStepService,
+    )
     {
-        //        try {
+    }
+
+    /**
+     * @throws PaymentException
+     */
+    public function handle(User $user, Invoice $invoice, string $code): void
+    {
+
         $this->invoiceService->ensureOwnership($invoice, $user->id);
         $this->invoiceService->ensureInvoiceIsValid($invoice);
         $this->walletService->ensureWalletIsUsable($user->wallet);
+
+        $this->twoStepService->verify($user, $invoice, $code);
 
         $this->limitService->checkAndApplyLimit($invoice->amount, function () use ($user, $invoice) {
             DB::transaction(function () use ($user, $invoice) {
@@ -29,8 +37,5 @@ class PayInvoiceService
             });
         });
 
-        //        } catch (PaymentException $e) {
-        //
-        //        }
     }
 }

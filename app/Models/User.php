@@ -38,4 +38,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function twoStepVerifications(): HasMany
+    {
+        return $this->hasMany(PaymentConfirmation::class);
+    }
 }

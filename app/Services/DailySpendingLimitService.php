@@ -10,7 +10,7 @@ class DailySpendingLimitService
 {
     public function checkAndApplyLimit(float $amount, callable $onLimitOk): void
     {
-        DB::transaction(function () use ($amount, $onLimitOk) {
+        DB::transaction(static function () use ($amount, $onLimitOk) {
             $todayTotal = Invoice::paidToday()->sum('amount');
 
             if ($todayTotal + $amount > config('wallet.daily_limit')) {

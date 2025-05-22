@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InvoicePaymentRequest;
 use App\Models\Invoice;
 use App\Services\PayInvoiceService;
 use Illuminate\Http\JsonResponse;
@@ -9,11 +10,13 @@ use Illuminate\Http\Request;
 
 class InvoicePaymentController extends Controller
 {
-    public function __construct(private readonly PayInvoiceService $payInvoiceService) {}
-
-    public function __invoke(Request $request, Invoice $invoice): JsonResponse
+    public function __construct(private readonly PayInvoiceService $payInvoiceService)
     {
-        $this->payInvoiceService->handle($request->user(), $invoice);
+    }
+
+    public function __invoke(InvoicePaymentRequest $request, Invoice $invoice): JsonResponse
+    {
+        $this->payInvoiceService->handle($request->user(), $invoice, $request->code);
 
         return response()->json([
             'message' => 'Invoice paid successfully',
