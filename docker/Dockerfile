@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.3-fpm
 LABEL MAINTAINER="MetaProfits Team"
 
 # Set working directory
