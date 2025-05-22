@@ -24,6 +24,14 @@ readonly class PayInvoiceService
      */
     public function handle(User $user, Invoice $invoice, string $code): void
     {
+        $lockKey = 'pay_invoice_user_' . $user->id;
+        $lock = cache()->lock($lockKey, 10);
+
+        if (!$lock->get()) {
+            abort(429,'Another payment process is already running. Please try again shortly.');
+        }
+
+
         try {
             $this->invoiceService->ensureOwnership($invoice, $user->id);
             $this->invoiceService->ensureInvoiceIsValid($invoice);
@@ -43,6 +51,8 @@ readonly class PayInvoiceService
             $this->walletService->refund($user->wallet, $invoice->amount ?? 0);
             $this->notificationService->sendFailure($user, $invoice, $e->getMessage());
             throw $e;
+        } finally {
+            $lock->release();
         }
     }
 }
