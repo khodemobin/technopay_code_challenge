@@ -9,6 +9,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::prefix('/invoice/{invoice}/2sv')->group(function () {
         Route::post('/initiate', [TwoStepVerificationController::class, 'initiate']);
-        Route::post('/verify', [TwoStepVerificationController::class, 'verify']);
+        Route::post('/verify', [TwoStepVerificationController::class, 'verify']) ->middleware('throttle:verify-code');
     });
 });
