@@ -14,6 +14,7 @@ readonly class PayInvoiceService
         private WalletService              $walletService,
         private DailySpendingLimitService  $limitService,
         private TwoStepVerificationService $twoStepService,
+        private NotificationService        $notificationService
     )
     {
     }
@@ -23,19 +24,25 @@ readonly class PayInvoiceService
      */
     public function handle(User $user, Invoice $invoice, string $code): void
     {
+        try {
+            $this->invoiceService->ensureOwnership($invoice, $user->id);
+            $this->invoiceService->ensureInvoiceIsValid($invoice);
+            $this->walletService->ensureWalletIsUsable($user->wallet);
 
-        $this->invoiceService->ensureOwnership($invoice, $user->id);
-        $this->invoiceService->ensureInvoiceIsValid($invoice);
-        $this->walletService->ensureWalletIsUsable($user->wallet);
+            $this->twoStepService->verify($user, $invoice, $code);
 
-        $this->twoStepService->verify($user, $invoice, $code);
-
-        $this->limitService->checkAndApplyLimit($invoice->amount, function () use ($user, $invoice) {
-            DB::transaction(function () use ($user, $invoice) {
-                $this->walletService->deductBalance($user->wallet, $invoice->amount);
-                $this->invoiceService->markAsPaid($invoice);
+            $this->limitService->checkAndApplyLimit($invoice->amount, function () use ($user, $invoice) {
+                DB::transaction(function () use ($user, $invoice) {
+                    $this->walletService->deductBalance($user->wallet, $invoice->amount);
+                    $this->invoiceService->markAsPaid($invoice);
+                });
             });
-        });
 
+            $this->notificationService->sendSuccess($user, $invoice);
+        } catch (PaymentException $e) {
+            $this->walletService->refund($user->wallet, $invoice->amount ?? 0);
+            $this->notificationService->sendFailure($user, $invoice, $e->getMessage());
+            throw $e;
+        }
     }
 }
