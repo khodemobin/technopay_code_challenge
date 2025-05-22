@@ -1,61 +1,81 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## 🧠 TechnoPay Code Challenge
+### Overview
+At **TechnoPay**, we deKBsign systems that prioritize security, integrity, and scalability. In this challenge, you are tasked with implementing a secure wallet purchase process that ensures safe and consistent transactions.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### 🎯 Objective
+Design and implement a wallet-based purchase system that ensures each transaction is explicitly confirmed before the wallet balance is deducted. The confirmation process should allow integrating two-step verification mechanisms, and the system must guarantee consistency, integrity, and safe execution even under concurrent requests.
 
-## About Laravel
+### 🧾 Scenario
+Users have wallet accounts with a balance they can use to make purchases. Your task is to build a system that supports:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+#### ✅ Functional Requirements
+The system should:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**1- Invoice payment support**
+>The system should be able to handle paying an invoice. The purchase has already been created, and now the invoice needs to be paid. It also has an expiration time.
 
-## Learning Laravel
+**2- User must not be blocked.**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**3- Wallet must be active.**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+**4- Ownership Enforcement**
+>Invoice must belogns to this user.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**5- Two-step verification**
+>Ensure that the purchase is confirmed before deducting the wallet balance to maintain integrity and prevent inconsistencies.
 
-## Laravel Sponsors
+**6- Insufficient Balance Handling**
+>If the wallet balance is insufficient, return an appropriate error and do not process the transaction.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**7-  Daily Spending Limit**
+>There is a global daily spending limit for all users combined. Prevent any invoice from being paid if the total value of already-paid invoices on the same day has reached this threshold.
 
-### Premium Partners
+**8-  Accurate Timestamps**
+>The system should record the time when the invoice is paid.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**9-  Notifications**
+>Notify the user appropriately after a successful or failed transaction.
 
-## Contributing
+**10-  Refund on Failure**
+>If an error occurs during the payment process, ensure that the amount is refunded to the wallet.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**11- Mock External Services**
+>If the system requires integration with external services, use mock services with fixed responses. No real integration is needed.
 
-## Code of Conduct
+**12- Ensure the response provides all necessary details**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### ⚠️ Concurrency & Safety
+The entire implementation must be safe for concurrent access, preventing race conditions and guaranteeing data consistency.
 
-## Security Vulnerabilities
+### 🧱 Architecture & Design Requirements
+Use **Laravel v11+**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+No external packages
 
-## License
+Code must be clean, readable, and maintainable
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Follow design patterns and `SOLID` principles
+
+Ensure the system is scalable and easy to extend
+
+Including a README file is required. The README should include the project structure and the design patterns used.
+
+### 🧪 Testing
+Provide **unit** and **feature** tests
+
+Include test cases for success, failure, and edge scenarios (e.g., simultaneous purchases)
+
+### Additional Points
+You get extra points if you Dockerize the project.
+
+### 🚚 Submission Guidelines
+Upload your code to a GitHub repository
+
+Share the link by replying to this email:
+📧 fouladgar.dev@gmail.com
+
+### 🤝 Final Notes
+If you have any questions, feel free to reach out. We're looking forward to seeing how you ensure safety, clarity, and scalability in your solution.
+
+Thank you for your time and interest in joining **TechnoPay**!
